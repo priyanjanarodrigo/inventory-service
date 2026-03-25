@@ -20,12 +20,9 @@ public class StandardApiException extends RuntimeException implements Serializab
 
   private String message;
 
-  public StandardApiException(String message) {
-    super(message);
-  }
-
   public StandardApiException(HttpStatus httpStatus, String message) {
     super(message);
+    this.message = message;
     this.httpStatus = httpStatus;
   }
 }
