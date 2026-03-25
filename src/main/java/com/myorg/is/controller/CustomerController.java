@@ -33,6 +33,12 @@ public class CustomerController {
 
   private final CustomerService customerService;
 
+  /**
+   * Creates a new customer based on the provided request data.
+   *
+   * @param customerRequest the request body containing the customer details to be created.
+   * @return a ResponseEntity containing the created customer details and a success status.
+   */
   @PostMapping
   public ResponseEntity<StandardApiResponse> createCustomer(
       @Valid @RequestBody CustomerRequest customerRequest) {
@@ -48,6 +54,13 @@ public class CustomerController {
         .body(new StandardApiResponse(new MetaData(SUCCESS), customerResponse));
   }
 
+  /**
+   * Retrieves a customer by the unique identifier of id.
+   *
+   * @param id the unique identifier of the customer to be retrieved, provided as a path variable.
+   * @return a ResponseEntity containing the customer details and a success status if found, or an
+   * appropriate error response if not found or if validation fails.
+   */
   @GetMapping("/{id}")
   public ResponseEntity<StandardApiResponse> getCustomerById(
       @Valid @PathVariable @NotNull(message = "{pathVariable.id.isRequired}") Long id) {
@@ -57,6 +70,18 @@ public class CustomerController {
         new StandardApiResponse(new MetaData(SUCCESS), customerService.getCustomerById(id)));
   }
 
+  /**
+   * Updates an existing customer identified by the provided id with the new details specified in
+   * the request body.
+   *
+   * @param id              the unique identifier of the customer to be updated, provided as a path
+   *                        variable.
+   * @param customerRequest the request body containing the updated customer details.
+   * @return a ResponseEntity containing the updated customer details and a success status if the
+   * update is successful, or an appropriate error response if the customer is not found, if
+   * validation fails, or if there are business rule violations (e.g., email already associated with
+   * another customer).
+   */
   @PutMapping("/{id}")
   public ResponseEntity<StandardApiResponse> updateCustomer(
       @Valid @PathVariable @NotNull(message = "{pathVariable.id.isRequired}") Long id,
@@ -67,6 +92,13 @@ public class CustomerController {
         customerService.updateCustomer(id, customerRequest)));
   }
 
+  /**
+   * Deletes an existing customer identified by the provided id.
+   *
+   * @param id the unique identifier of the customer to be deleted, provided as a path variable.
+   * @return a ResponseEntity with no content if the deletion is successful, or an appropriate error
+   * response if the customer is not found or if validation fails.
+   */
   @DeleteMapping("/{id}")
   public ResponseEntity<StandardApiResponse> deleteCustomer(
       @Valid

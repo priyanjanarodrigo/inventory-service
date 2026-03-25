@@ -31,6 +31,21 @@ public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
 
+  /**
+   * Creates a new customer based on the provided request data. This method first checks if the
+   * email in the request is already taken by another customer; if so, a
+   * {@link StandardApiException} with a CONFLICT status is thrown, indicating that the email is not
+   * available for use and prompting the user to provide a different email address. If the email is
+   * valid and not taken, a new customer entity is created from the request data, saved to the
+   * repository, and the created customer details are returned as a {@link CustomerResponse}.
+   *
+   * @param customerRequest the request body containing the customer details to be created, which
+   *                        must not be null and must contain valid data according to the defined
+   *                        constraints.
+   * @return the created customer details as a {@link CustomerResponse} if the creation is
+   * successful; otherwise, an appropriate exception is thrown indicating the reason for the failure
+   * (e.g., email already taken, etc.).
+   */
   @Override
   public CustomerResponse createCustomer(CustomerRequest customerRequest) {
     checkIfEmailAlreadyTaken(customerRequest.email());
@@ -40,11 +55,46 @@ public class CustomerServiceImpl implements CustomerService {
     return objectMapper.convertValue(customer, CustomerResponse.class);
   }
 
+  /**
+   * Retrieves a customer by their unique identifier (ID). This method first validates the provided
+   * ID to ensure it is not null and is greater than zero. If the ID is valid, it attempts to find
+   * the customer in the repository. If a customer with the specified ID is found, it is returned as
+   * a {@link CustomerResponse}; otherwise, a {@link StandardApiException} with a NOT_FOUND status
+   * is thrown, indicating that no customer exists for the given ID.
+   *
+   * @param id the unique identifier of the customer to be retrieved, which must not be null and
+   *           must be greater than zero.
+   * @return the customer details as a {@link CustomerResponse} if a customer with the specified ID
+   * is found; otherwise, an exception is thrown indicating that the customer was not found.
+   */
   @Override
   public CustomerResponse getCustomerById(Long id) {
     return objectMapper.convertValue(getExistingCustomerById(id), CustomerResponse.class);
   }
 
+  /**
+   * Updates an existing customer identified by their unique identifier (ID) with the provided
+   * request data. This method first retrieves the existing customer using the provided ID to ensure
+   * that the customer exists. If the customer is found, it checks if the email in the request is
+   * already associated with the same customer; if so, a {@link StandardApiException} with a
+   * CONFLICT status is thrown, indicating that the email is already associated with this particular
+   * customer. If the email is different, it checks if the new email is already taken by another
+   * customer; if so, a {@link StandardApiException} with a CONFLICT status is thrown, indicating
+   * that the email is already taken and prompting the user to provide a different email address. If
+   * the email is valid and not taken, the customer's details are updated with the new information
+   * from the request, and the updated customer is saved to the repository. Finally, the updated
+   * customer details are returned as a {@link CustomerResponse}.
+   *
+   * @param id              the unique identifier of the customer to be updated, which must not be
+   *                        null and must be greater than zero.
+   * @param customerRequest the request body containing the updated customer details, which must not
+   *                        be null and must contain valid data according to the defined
+   *                        constraints.
+   * @return the updated customer details as a {@link CustomerResponse} if the update is successful;
+   * otherwise, an appropriate exception is thrown indicating the reason for the failure (e.g.,
+   * customer not found, email already associated with the same customer, email already taken by
+   * another customer, etc.).
+   */
   @Override
   public CustomerResponse updateCustomer(Long id, CustomerRequest customerRequest) {
     Customer customer = getExistingCustomerById(id);
@@ -62,6 +112,16 @@ public class CustomerServiceImpl implements CustomerService {
     return objectMapper.convertValue(customerRepository.save(customer), CustomerResponse.class);
   }
 
+  /**
+   * Deletes an existing customer identified by their unique identifier (ID). This method first
+   * retrieves the customer using the provided ID to ensure that the customer exists. If the
+   * customer is found, it is deleted from the repository. If the customer does not exist, a
+   * {@link StandardApiException} with a NOT_FOUND status is thrown, indicating that no customer
+   * exists for the given ID.
+   *
+   * @param id the unique identifier of the customer to be deleted, which must not be null and must
+   *           be greater than zero.
+   */
   @Override
   public void deleteCustomerById(Long id) {
     Customer customer = getExistingCustomerById(id);
@@ -69,6 +129,18 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
 
+  /**
+   * Retrieves an existing customer by their unique identifier (ID). This method performs validation
+   * on the provided ID to ensure it is not null and is greater than zero. If the ID is valid, it
+   * attempts to find the customer in the repository. If a customer with the specified ID is found,
+   * it is returned; otherwise, a {@link StandardApiException} with a NOT_FOUND status is thrown,
+   * indicating that no customer exists for the given ID.
+   *
+   * @param id the unique identifier of the customer to be retrieved, which must not be null and
+   *           must be greater than zero.
+   * @return the existing customer associated with the provided ID if found; otherwise, an exception
+   * is thrown indicating that the customer was not found.
+   */
   private Customer getExistingCustomerById(Long id) {
     if (isNull(id)) {
       throw new StandardApiException(BAD_REQUEST, ERROR_CUSTOMER_ID_CANNOT_BE_NULL);
@@ -90,13 +162,14 @@ public class CustomerServiceImpl implements CustomerService {
     return customerRepository.getCustomerByEmail(email).isPresent();
   }
 
+
   /**
    * Checks if the provided email is already associated with an existing customer. If the email is
    * already taken, a {@link StandardApiException} with a CONFLICT status is thrown, indicating that
-   * the email is not available for use. This method is used to enforce the uniqueness constraint on
-   * customer email addresses and prevent duplicate entries in the system.
+   * the email is not available for use and prompting the user to provide a different email
+   * address.
    *
-   * @param email Email address.
+   * @param email the email address to be checked for uniqueness against existing customers.
    */
   private void checkIfEmailAlreadyTaken(String email) {
     if (isCustomerExistByEmail(email)) {
