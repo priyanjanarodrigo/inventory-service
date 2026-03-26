@@ -2,6 +2,8 @@ package com.myorg.is.service;
 
 import com.myorg.is.model.dto.request.CustomerRequest;
 import com.myorg.is.model.dto.response.CustomerResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface defining the business operations for managing
@@ -15,11 +17,13 @@ import com.myorg.is.model.dto.response.CustomerResponse;
  */
 public interface CustomerService {
 
-  CustomerResponse createCustomer(CustomerRequest customerRequest);
+    CustomerResponse createCustomer(CustomerRequest customerRequest);
 
-  CustomerResponse getCustomerById(Long id);
+    CustomerResponse getCustomerById(Long id);
 
-  CustomerResponse updateCustomer(Long id, CustomerRequest customerRequest);
+    CustomerResponse updateCustomer(Long id, CustomerRequest customerRequest);
 
-  void deleteCustomerById(Long id);
+    void deleteCustomerById(Long id);
+
+    Page<CustomerResponse> getAllCustomers(Pageable pageable);
 }

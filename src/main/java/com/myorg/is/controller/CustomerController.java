@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -109,5 +110,21 @@ public class CustomerController {
 
         customerService.deleteCustomerById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Retrieves a paginated list of all customers.
+     *
+     * @param pageable the pagination information, including page number, page size, and sorting options, provided
+     *                 as query parameters.
+     * @return a ResponseEntity containing a paginated list of customers and a success status, or an appropriate error
+     * response if validation fails.
+     */
+    @GetMapping
+    public ResponseEntity<StandardApiResponse> getAllCustomers(Pageable pageable) {
+        log.debug("Get all customers request received");
+
+        return ResponseEntity.ok(new StandardApiResponse(new MetaData(SUCCESS),
+                customerService.getAllCustomers(pageable)));
     }
 }

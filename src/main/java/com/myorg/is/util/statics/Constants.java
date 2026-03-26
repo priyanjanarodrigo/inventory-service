@@ -9,7 +9,7 @@ import static lombok.AccessLevel.PRIVATE;
  */
 @NoArgsConstructor(access = PRIVATE)
 public final class Constants {
-
+    
     public static final int INT_ONE = 1;
     public static final String ERROR_CUSTOMER_ID_CANNOT_BE_NULL = "Customer Id cannot be null";
     public static final String ERROR_CUSTOMER_ID_MUST_BE_GREATER_THAN_ZERO = "Customer Id must be greater than zero";

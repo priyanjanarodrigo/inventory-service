@@ -6,6 +6,8 @@ import com.myorg.is.model.dto.response.CustomerResponse;
 import com.myorg.is.model.entity.Customer;
 import com.myorg.is.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
@@ -173,7 +175,6 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.getCustomerByEmail(email).isPresent();
     }
 
-
     /**
      * Checks if the provided email is already associated with an existing customer. If the email is
      * already taken, a {@link StandardApiException} with a CONFLICT status is thrown, indicating that
@@ -186,5 +187,21 @@ public class CustomerServiceImpl implements CustomerService {
         if (isCustomerExistByEmail(email)) {
             throw new StandardApiException(CONFLICT, format(ERROR_EMAIL_ALREADY_TAKEN, email));
         }
+    }
+
+    /**
+     * Retrieves a paginated list of all customers. This method queries the repository to retrieve all
+     * customers in a paginated format based on the provided {@link Pageable} parameter. The retrieved
+     * customer entities are then converted to {@link CustomerResponse} DTOs before being returned as a
+     * paginated response.
+     *
+     * @param pageable the pagination information, including page number, page size, and sorting
+     *                 criteria, which must not be null.
+     * @return a paginated list of customers as {@link CustomerResponse} DTOs.
+     */
+    @Override
+    public Page<CustomerResponse> getAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(customer -> objectMapper.convertValue(customer, CustomerResponse.class));
     }
 }
