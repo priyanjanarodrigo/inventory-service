@@ -130,7 +130,6 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.delete(customer);
     }
 
-
     /**
      * Retrieves an existing customer by their unique identifier (ID). This method performs validation
      * on the provided ID to ensure it is not null and is greater than zero. If the ID is valid, it
@@ -156,6 +155,16 @@ public class CustomerServiceImpl implements CustomerService {
                 NOT_FOUND, format(ERROR_CUSTOMER_NOT_FOUND_FOR_ID, id)));
     }
 
+    /**
+     * Checks if a customer exists with the provided email address. This method first validates the
+     * email to ensure it is not null and is not blank. If the email is valid, it queries the
+     * repository to check if a customer with the specified email exists. The method returns true if a
+     * customer with the given email is found; otherwise, it returns false.
+     *
+     * @param email the email address to be checked for existence, which must not be null and must not
+     *              be blank.
+     * @return true if a customer with the specified email exists; otherwise, false.
+     */
     private boolean isCustomerExistByEmail(String email) {
         if (isNull(email) || email.isBlank()) {
             throw new StandardApiException(BAD_REQUEST, ERROR_EMAIL_IS_REQUIRED);
