@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotNull;
  * @param lastName  the last name of the customer, which is required and cannot be blank.
  * @param email     the email address of the customer, which is required, cannot be blank, and must be
  *                  in a valid email format.
+ * @param address   the address of the customer, which is optional.
  */
 public record CustomerRequest(
         @NotNull(message = "{request.firstName.isRequired}")
@@ -24,6 +25,7 @@ public record CustomerRequest(
         @NotNull(message = "{request.email.isRequired}")
         @NotBlank(message = "{request.email.isRequired}")
         @Email(message = "{request.email.invalidFormat}")
-        String email) {
+        String email,
+        String address) {
 
 }

@@ -7,7 +7,8 @@ package com.myorg.is.model.dto.response;
  * @param firstName First name of the customer
  * @param lastName  Last name of the customer
  * @param email     Email address of the customer
+ * @param address   Address of the customer
  */
-public record CustomerResponse(Long id, String firstName, String lastName, String email) {
+public record CustomerResponse(Long id, String firstName, String lastName, String email, String address) {
 
 }
